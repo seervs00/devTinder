@@ -4,12 +4,10 @@ const app = express();
 app.listen(3000,()=>{
     console.log("server listen successfully");
 });
-app.use("/test",(req,res)=>{  
-    res.send("hello server is respond")
+
+app.get("/user",(req,res) => {
+   res.send({"name":"mahendra seervi"})
 })
-app.use("/get",(req,res)=>{
-    res.send("hello server is respond")
-})
-app.use("/",(req,res)=>{
-    res.send("hello server is respond")
+app.post("/user",(req,res) => {
+    res.send("data saved successfully.")
 })
