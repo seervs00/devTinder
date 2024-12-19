@@ -4,26 +4,46 @@ const {userauth,adminauth} = require("./middlewares/auth")
 app.listen(7777,()=>{
     console.log("server listen successfully");
 });
+app.use("/user",(req,res) =>{
+    throw new Error("fshdj")
+    res.send("data send")
 
-app.use("/admin",adminauth);
-app.use("/admin/getalldata",
-    (req,res) =>{
-        console.log("route handler 1")
+})
+app.use("/",(err,req,res,next) =>{
+    console.log("1st handler")
+    if(err){
+        res.status(500).send("some error occor")
+    }
+    res.send("handler send");
+});
+
+
+
+
+// app.use("/admin",adminauth);
+// app.use("/admin/getalldata",
+//     (req,res) =>{
+//         console.log("route handler 1")
        
-        res.send("all the data");
+//         res.send("all the data");
        
     
-    })
+//     })
 
-app.use("/admin/deletedata",
-    (req,res) =>{
-        res.send("delete all the data");
-    }
-)
+// app.use("/admin/deletedata",
+//     (req,res) =>{
+//         res.send("delete all the data");
+//     }
+// )
 
-app.use("/user",userauth,(req,res) =>{
-    res.send("1st")
-})
+// app.use("/user",userauth,(req,res) =>{
+//     res.send("1st")
+// })
+
+
+
+
+
 // app.use("/user",(req,res) =>{
 //     res.send("1st")
 // })
