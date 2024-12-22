@@ -17,6 +17,49 @@ app.get("/user", async(req,res) => {
     }
 });
 
+//update the user
+app.patch("/user",async(req,res) => {
+    const userId = req.body.emailId;
+    const data = req.body;
+    try{
+        const user =  await User.findOneAndUpdate({emailId:userId},data);
+        // const user = await User.findByIdAndUpdate(userId,data, {returnDocument : "after"});
+        // console.log(user)
+        res.send("data update successfully");
+    }
+     catch (err) {
+            console.error("Error saving user:", err);
+            res.status(500).send("Error saving user"); 
+    }
+
+});
+
+// delete the user 
+app.delete("/userid", async(req,res) => {
+     const userId = req.body._id;
+    const usersid= await User.findByIdAndDelete(userId);
+    try {
+       res.send("user deleted successfully")
+    }
+    catch (err) {
+        console.error("Error saving user:", err);
+        res.status(500).send("Error saving user");
+    }
+});
+//find the user using userid
+app.get("/userid", async(req,res) => {
+ 
+    const usersid= await User.findById({_id:req.body._id});
+    try {
+        
+        res.send(usersid);
+    }
+    catch (err) {
+        console.error("Error saving user:", err);
+        res.status(500).send("Error saving user");
+    }
+});
+
 app.get("/feed", async(req,res) => {
     const users = await User.find();
     try {
@@ -32,7 +75,8 @@ app.get("/feed", async(req,res) => {
         res.status(500).send("Error saving user");
     }
 });
-
+  
+// creating new user
 app.post("/signup",async (req, res) => {
     //Creating a new instance of the user model
     const user = new User(req.body);
