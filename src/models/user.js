@@ -40,14 +40,14 @@ var validator = require('validator');
     },
     age: {
         type: Number,
-        required: true,
+        // required: true,
         min: 15,
         max:100,
         trim: true,
     },
     gender: {
         type: String,
-        required: true,
+        // required: true,
         trim: true,
         validate(value){
             if(!["male","female","other"].includes(value)){
