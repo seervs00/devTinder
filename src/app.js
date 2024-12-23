@@ -5,37 +5,41 @@ const app = express();
 const User = require("./models/user")
 app.use(express.json());
 
-app.get("/user", async(req,res) => {
-    const users = await User.findOne({emailId:req.body.emailId});
-    try {
-        
-        res.send(users);
-    }
-    catch (err) {
-        console.error("Error saving user:", err);
-        res.status(500).send("Error saving user");
-    }
-});
+
 
 //update the user
-app.patch("/user",async(req,res) => {
-    const userId = req.body.emailId;
+app.patch("/user/:userId",async(req,res) => {
+    const userId = req.params.userId;
     const data = req.body;
     try{
-        const user =  await User.findOneAndUpdate({emailId:userId},data);
-        // const user = await User.findByIdAndUpdate(userId,data, {returnDocument : "after"});
+        const UPDATE_ALLOWED = [
+            "gender",
+            "photoUrl",
+            "age",
+            "skills"
+        ];
+        const isUpdate = Object.keys(data).every((k) => UPDATE_ALLOWED.includes(k));
+
+        if(!isUpdate){
+            throw new Error(" update are note allowed");
+        }
+        if(data?.skills >10){
+            throw new Error("note greater then 10");
+        }
+        // const user =  await User.findOneAndUpdate({emailId:userId},data);
+        const user = await User.findByIdAndUpdate(userId,data, {returnDocument : "after",runValidators:true});
         // console.log(user)
         res.send("data update successfully");
     }
      catch (err) {
-            console.error("Error saving user:", err);
-            res.status(500).send("Error saving user"); 
+            
+            res.status(500).send("Error saving user " + err.message); 
     }
 
 });
 
 // delete the user 
-app.delete("/userid", async(req,res) => {
+app.delete("/user", async(req,res) => {
      const userId = req.body._id;
     const usersid= await User.findByIdAndDelete(userId);
     try {
@@ -47,8 +51,8 @@ app.delete("/userid", async(req,res) => {
     }
 });
 //find the user using userid
-app.get("/userid", async(req,res) => {
- 
+app.get("/user", async(req,res) => {
+    // const users = await User.findOne({emailId:req.body.emailId});
     const usersid= await User.findById({_id:req.body._id});
     try {
         
@@ -80,13 +84,11 @@ app.get("/feed", async(req,res) => {
 app.post("/signup",async (req, res) => {
     //Creating a new instance of the user model
     const user = new User(req.body);
-    console.log(req.body)
     try {
         await user.save();
         res.send("Data saved successfully");
     } catch (err) {
-        console.error("Error saving user:", err);
-        res.status(500).send("Error saving user");
+        res.status(500).send("Error saving user:"+ err.message);
     }
 
   });
