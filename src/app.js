@@ -2,11 +2,13 @@ const express = require("express")
 const {connectDB} = require("./config/database")
 const app = express();
 const bcrypt = require("bcrypt")
-const {validateSignUpData} = require("./utils/validate")
-// const {userauth,adminauth} = require("./middlewares/auth")
+const {validateSignUpData} = require("./utils/validate");
 const User = require("./models/user")
+const cookieParser = require("cookie-parser");
+const jwt = require("jsonwebtoken");
+const {userauth} = require("./middlewares/auth")
 app.use(express.json());
-
+app.use(cookieParser());
 // creating new user
 app.post("/signup",async (req, res) => {
     //Creating a new instance of the user model
@@ -43,6 +45,9 @@ app.post("/login",async(req,res) =>{
     // check the password are correct or note
     const isPasswordValidate = await bcrypt.compare(password, user.password);
     if(isPasswordValidate){
+
+        const token = jwt.sign({_id:user._id},"Mahendra@7878");
+        res.cookie("token",token);
         res.send("login successfully!!");
     }
     else{
@@ -54,9 +59,23 @@ catch (err) {
 }
     
 })
+app.get("/profile", userauth ,async(req,res) => {
+    try{
+        const user = req.user;
+   
+    res.send(user);
+
+    }
+    catch (err) {
+        res.status(500).send("Error saving user:"+ err.message);
+    }
+
+})
 //update the user
-app.patch("/user/:userId",async(req,res) => {
-    const userId = req.params.userId;
+
+app.patch("/user",userauth, async(req,res) => {
+    const user = req.user;
+    const {userId} = user._id;
     const data = req.body;
     try{
         const UPDATE_ALLOWED = [
@@ -84,26 +103,27 @@ app.patch("/user/:userId",async(req,res) => {
     }
 
 });
-
 // delete the user 
-app.delete("/user", async(req,res) => {
-     const userId = req.body._id;
-    const usersid= await User.findByIdAndDelete(userId);
+//find the user using userid
+app.get("/user",userauth, async(req,res) => {
+    // const users = await User.findOne({emailId:req.body.emailId});
     try {
-       res.send("user deleted successfully")
+        const user = req.user;
+        
+        res.send(user);
     }
     catch (err) {
         console.error("Error saving user:", err);
         res.status(500).send("Error saving user");
     }
 });
-//find the user using userid
-app.get("/user", async(req,res) => {
-    // const users = await User.findOne({emailId:req.body.emailId});
-    const usersid= await User.findById({_id:req.body._id});
+
+app.delete("/user",userauth, async(req,res) => {
     try {
-        
-        res.send(usersid);
+     const user = req.user;
+     const {_id} = user._id;
+    const usersid= await User.findByIdAndDelete(_id);
+       res.send("user deleted successfully")
     }
     catch (err) {
         console.error("Error saving user:", err);
@@ -112,22 +132,20 @@ app.get("/user", async(req,res) => {
 });
 
 app.get("/feed", async(req,res) => {
-    const users = await User.find();
     try {
+        const users = await User.find();
         if(users.length == 0){
             res.send("user not found");
         }
         else{
-        res.send(users);
+            res.send(users);
+        }
     }
-}
     catch (err) {
         console.error("Error saving user:", err);
         res.status(500).send("Error saving user");
     }
 });
-  
-
 
 connectDB()
  .then( () =>{

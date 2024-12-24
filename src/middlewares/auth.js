@@ -1,24 +1,24 @@
-const adminauth = (req,res,next) =>{
-    console.log("check authethication")
-    const token = "xyg";
-    const isautherize = token === "xyg"
-    if(isautherize){
-        next()
+const User = require("../models/user");
+const jwt = require("jsonwebtoken");
+
+const userauth= async(req,res,next) =>{
+ try{
+    const {token} = req.cookies;
+    const encodedMessage = await jwt.verify(token,"Mahendra@7878");
+    const {_id} = encodedMessage;
+    if(!token){
+        throw new Error("invalid token");
     }
-    else{
-        res.status(404).send("unautherize user");
+    const user = await User.findById(_id);
+    if(!user){
+        throw new Error("user not valid ");
     }
+    req.user = user;
+    next();
+ }
+ catch(err){
+    res.status(500).send("Error saving user:"+ err.message);
+ }
+
 }
-const userauth= (req,res,next) =>{
-    console.log("check authethication")
-    console.log("route handler 1")
-    const token = "xyg";
-    const isautherize = token === "xyg"
-    if(isautherize){
-        next();
-    }
-    else{
-        res.status(404).send("unautherize user");
-    }
-}
-module.exports = {userauth,adminauth};
+module.exports = {userauth};
