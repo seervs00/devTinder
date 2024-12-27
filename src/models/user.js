@@ -51,16 +51,17 @@ const bcrypt = require("bcrypt")
         type: String,
         // required: true,
         trim: true,
-        validate(value){
-            if(!["male","female","other"].includes(value)){
-                throw new Error("gender data is not valid")
-            }
+        enum: {
+            values: ["male","female","other"],
+            message: `{VALUE} gender data is not valid`
         }
+       
+       
     },
     photoUrl: {
         type: String,
         trim: true,
-        maxlength:500,
+        maxlength:300,
         default:"https://res.cloudinary.com/demo/image/upload/d_avatar.png/non_existing_id.png",
         validate(value){
             if(!validator.isURL(value)){
@@ -75,15 +76,23 @@ const bcrypt = require("bcrypt")
                 throw new Error("you are not add skills more then 10");
             }
         }
+    },
+    about: {
+        type : String,
+        maxlength:1000,
+        trim: true,
     }
 
  },{timestamps: true});
+
+ userSchema.index({firstName:1, lastName:2});
 
  userSchema.methods.getJWT = async function(){
     const user = this;
     const token = await jwt.sign({_id:user._id},"Mahendra@7878", {expiresIn: "1d"});
     return token;
  };
+ 
  userSchema.methods.validatePassword = async function(passwordInputByUser){
     const user = this;
     const passwordhash = user.password
