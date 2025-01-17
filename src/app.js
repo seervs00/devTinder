@@ -2,6 +2,18 @@ const express = require("express")
 const {connectDB} = require("./config/database")
 const app = express();
 const cookieParser = require("cookie-parser");
+const cors = require("cors");
+
+require("dotenv").config();
+
+app.use(
+  cors({
+    origin: "*",  // Allow all origins
+    credentials: true,  // Allow sending cookies and authentication data with requests
+  })
+);
+
+ 
 
 const authRouter = require("./routers/auth");
 const profileRouter = require("./routers/profile");
@@ -17,8 +29,9 @@ app.use("/",userRouter)
 connectDB()
  .then( () =>{
     console.log("connection successfully");
-    app.listen(7777,()=>{
-        console.log("server listen successfully");
+    app.listen(5170,()=>{
+        console.log("server listen successfully ");
+
     });
     
  }

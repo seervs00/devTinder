@@ -70,15 +70,15 @@ requestRouter.post("/request/review/:status/:requestId", userauth, async (req,re
     status: "interested"
   });
   if(!connectionRequest){
-    return res.status(404).send({message: "something went wrong"});
+    return res.status(404).json({message: "something went wrong"});
 
   }
   connectionRequest.status = status;
   const data = await connectionRequest.save();
-  res.send({message:"connection rewuest " + status,data})
+  res.json({message:"connection rewuest " + status,data})
  }
  catch(err){
-  res.status(404).send("ERROR " + err.message)
+  res.status(404).json("ERROR " + err.message)
  };
 })
 module.exports = requestRouter;

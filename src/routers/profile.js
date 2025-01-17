@@ -8,7 +8,7 @@ profileRouter.get("/profile/view", userauth ,(req,res) => {
     try{
         const user = req.user;
    
-    res.send(user);
+    res.json(user);
 
     }
     catch (err) {
@@ -22,7 +22,7 @@ profileRouter.patch("/profile/edit",userauth , async (req, res) =>{
     if( !validateEditProfileData(req)){
     throw new Error("update invalid");
     }
-    const logInUser = req.user;
+    const logInUser = req.user;  
     Object.keys(req.body).forEach((k) =>{
         logInUser[k] = req.body[k]
     });
@@ -42,24 +42,25 @@ profileRouter.patch("/profile/password",userauth, async (req, res) =>{
     const password = req.body.password;
     const newPassword = req.body.newPassword;
    try{
+     const isPasswordValidate =  await user.validatePassword(password);
+     if( !isPasswordValidate){
+        throw new Error("password is not correct")
+    }
     if(validateNewPassword(newPassword)){
         throw new Error("please enter strong password");
     }
     if(password === newPassword){
         throw new Error("invalid password");
     }
-    const isPasswordValidate =  await user.validatePassword(password);
-    if( !isPasswordValidate){
-        throw new Error("password is not correct")
-    }
+   
     const passwordHash =  await bcrypt.hash(newPassword, 10);
    user.password = passwordHash;
    await user.save();
-   res.send("password change successfully!")
+   res.json({message:"password change successfully!"})
    }
    catch(err){
-    res.status(500).send("Error savind user " + err.message )
+    res.status(500).json({message:"Error savind user " + err.message })
    }
 
-})
-module.exports =profileRouter;
+});
+module.exports = profileRouter;
