@@ -43,7 +43,7 @@ authRouter.post("/login",async(req,res) =>{
         const token = await user.getJWT();
         res.cookie("token",token,{expires: new Date(Date.now() + 8 * 3600000)});
         // expire  your cokies in 8 hour
-        res.json({message: "login successfully!!"});
+        res.json(user);
     }
     else{
         throw new Error("Invalid  credentials");  
