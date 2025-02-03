@@ -76,7 +76,7 @@ try{
       
    });
 
-   const user = await User.find({
+   const data = await User.find({
       $and :[
          {_id: {$nin :Array.from(hideUserFromFeed)}},
          {_id: {$ne: loggedInUser._id}}
@@ -84,7 +84,7 @@ try{
    }).select(USER_SAFE_DATA)
     .skip(skip)
    .limit(limit);
-   res.json({message:"feed user to see profile",user});
+   res.json({message:"feed user to see profile",data});
 }
 catch(err){
    res.status(404).json({message: "something went wrong "});

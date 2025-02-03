@@ -21,8 +21,10 @@ authRouter.post("/signup",async (req, res) => {
       password: passwordHash,
     }
     );
-        await user.save();
-        res.json({message:"Data saved successfully"});
+      const saveUser =   await user.save();
+      const token = await saveUser.getJWT();
+      res.cookie("token",token,{expires: new Date(Date.now() + 8 * 3600000)});
+        res.json({message:"Data saved successfully",data:saveUser});
     } catch (err) {
         res.status(500).send("Error saving user:"+ err.message);
     }
@@ -34,7 +36,7 @@ authRouter.post("/login",async(req,res) =>{
     // check the user are exit or note
     const user =  await User.findOne({emailId: emailId});
     if( !user ){
-        throw new Error ("Invalid  credentials");
+        throw new Error ("Invalid Credentials");
     }
     // check the password are correct or note
     const isPasswordValidate = await user.validatePassword(password);
@@ -46,18 +48,19 @@ authRouter.post("/login",async(req,res) =>{
         res.json(user);
     }
     else{
-        throw new Error("Invalid  credentials");  
+        throw new Error("Invalid credentials");  
     }
 }
 catch (err) {
-    res.status(500).send("Error saving user:"+ err.message);
+    res.status(500).send( err.message);
 }
     
 });
 authRouter.post("/logout",async (req,res) =>{
     res
     .cookie("token" ,null ,{expires: new Date(Date.now())})
-    .json({message:"logout user"})
+    res.send("logout successfull !!")
+  
 });
 
 

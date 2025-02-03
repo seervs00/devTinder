@@ -17,11 +17,11 @@ profileRouter.get("/profile/view", userauth ,(req,res) => {
 
 });
 
-profileRouter.patch("/profile/edit",userauth , async (req, res) =>{
+profileRouter.post("/profile/edit", userauth , async (req, res) =>{
  try{
-    if( !validateEditProfileData(req)){
-    throw new Error("update invalid");
-    }
+    // if( !validateEditProfileData(req)){
+    // throw new Error("update invalid");
+    // }
     const logInUser = req.user;  
     Object.keys(req.body).forEach((k) =>{
         logInUser[k] = req.body[k]

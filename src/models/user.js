@@ -44,7 +44,7 @@ const bcrypt = require("bcrypt")
         type: Number,
         // required: true,
         min: 15,
-        max:100,
+        max:150,
         trim: true,
     },
     gender: {
@@ -61,7 +61,7 @@ const bcrypt = require("bcrypt")
     photoUrl: {
         type: String,
         trim: true,
-        maxlength:300,
+        maxlength:50000,
         default:"https://res.cloudinary.com/demo/image/upload/d_avatar.png/non_existing_id.png",
         validate(value){
             if(!validator.isURL(value)){

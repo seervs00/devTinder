@@ -4,11 +4,12 @@ const jwt = require("jsonwebtoken");
 const userauth= async(req,res,next) =>{
  try{
     const {token} = req.cookies;
+    if(!token){
+        return  res.status(401).send("please login")
+       }
     const encodedMessage = await jwt.verify(token,"Mahendra@7878");
     const {_id} = encodedMessage;
-    if(!token){
-        throw new Error("invalid token");
-    }
+    
     const user = await User.findById(_id);
     if(!user){
         throw new Error("user not valid ");
